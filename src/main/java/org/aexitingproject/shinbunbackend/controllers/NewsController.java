@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Optional;
+
 @RestController
 public class NewsController {
     private static final Logger logger = LoggerFactory.getLogger(NewsController.class);
@@ -33,10 +35,10 @@ public class NewsController {
         }
 
         try {
-            NewsResponse news = newsService.getNews(query, sortBy, pageSize);
+            Optional<NewsResponse> news = newsService.getNews(query, sortBy, pageSize);
 
-            if (news != null) {
-                return ResponseEntity.ok(news);
+            if (news.isPresent()) {
+                return ResponseEntity.ok(news.get());
             } else {
                 logger.warn("getNews returned null");
                 return ResponseEntity.notFound().build();
