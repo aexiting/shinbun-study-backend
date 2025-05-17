@@ -1,9 +1,7 @@
-package org.aexitingproject.shinbunbackend;
+package org.aexitingproject.shinbunbackend.services;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.aexitingproject.shinbunbackend.data.NewsResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,7 +48,7 @@ public class NewsService {
     }
 
 
-    public class NewsApiException extends RuntimeException {
+    public static class NewsApiException extends RuntimeException {
         public NewsApiException(String message, Throwable cause) {
             super(message, cause);
         }
@@ -83,7 +81,7 @@ public class NewsService {
             logger.info("Requesting weather data from URL: {}", url);
         } catch (IllegalArgumentException | URISyntaxException e) {
             logger.error("Error converting apiUrl to Uri object {}", e.getMessage());
-            throw new IllegalArgumentException("Invalid API URL configuration or params: " + e.getMessage(), e);
+            throw new NewsApiException("Invalid API URL configuration or params: " + e.getMessage(), e);
         }
 
         try {

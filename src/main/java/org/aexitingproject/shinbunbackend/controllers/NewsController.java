@@ -1,6 +1,6 @@
 package org.aexitingproject.shinbunbackend.controllers;
 
-import org.aexitingproject.shinbunbackend.NewsService;
+import org.aexitingproject.shinbunbackend.services.NewsService;
 import org.aexitingproject.shinbunbackend.data.NewsResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
