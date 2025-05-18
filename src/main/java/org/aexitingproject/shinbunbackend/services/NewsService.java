@@ -40,7 +40,7 @@ public class NewsService {
     @Value("${news.api.url}")
     private String apiUrl;
 
-    // Constructor injection for RestTemplate
+
     @Autowired
     public NewsService(RestTemplate restTemplate, ObjectMapper objectMapper) {
         this.restTemplate = restTemplate;
