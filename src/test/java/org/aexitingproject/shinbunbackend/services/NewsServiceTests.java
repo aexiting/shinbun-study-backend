@@ -67,4 +67,16 @@ public class NewsServiceTests {
         assertEquals(1, result.get().getTotalResults(), "Total results should match");
         assertEquals("Test Article", result.get().getArticles().get(0).getTitle(), "Article title should match");
     }
+
+    @Test
+    public void getNewsSuccessShouldReturnEmptyResponseWhenGettingNonOkStatus() throws Exception {
+        final String mockResponse = "{\"totalResults\":1,\"articles\":[{\"title\":\"Test Article\"}]}";
+
+        ResponseEntity<String> mockResponseEntity = new ResponseEntity<>(mockResponse, HttpStatus.BAD_REQUEST);
+        when(restTemplate.getForEntity(any(String.class), eq(String.class))).thenReturn(mockResponseEntity);
+
+
+        Optional<NewsResponse> result = newsService.getNews(TEST_QUERY, TEST_SORT_BY, TEST_PAGE_SIZE);
+        assertTrue(result.isEmpty(), "NewsResponse should be empty");
+    }
 }
