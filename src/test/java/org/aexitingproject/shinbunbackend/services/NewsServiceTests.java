@@ -11,17 +11,17 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class NewsServiceTests {
@@ -69,14 +69,24 @@ public class NewsServiceTests {
     }
 
     @Test
-    public void getNewsSuccessShouldReturnEmptyResponseWhenGettingNonOkStatus() throws Exception {
+    public void getNewsShouldReturnEmptyResponseWhenGettingNonOkStatus() {
         final String mockResponse = "{\"totalResults\":1,\"articles\":[{\"title\":\"Test Article\"}]}";
 
         ResponseEntity<String> mockResponseEntity = new ResponseEntity<>(mockResponse, HttpStatus.BAD_REQUEST);
         when(restTemplate.getForEntity(any(String.class), eq(String.class))).thenReturn(mockResponseEntity);
 
-
         Optional<NewsResponse> result = newsService.getNews(TEST_QUERY, TEST_SORT_BY, TEST_PAGE_SIZE);
         assertTrue(result.isEmpty(), "NewsResponse should be empty");
+    }
+
+    @Test
+    public void getNewsShouldThrowNewsApiExceptionWhenGettingClientError() {
+        HttpClientErrorException httpClientErrorException = new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Client Error", "Response Body".getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8);
+
+        when(restTemplate.getForEntity(any(String.class), eq(String.class))).thenThrow(httpClientErrorException);
+        assertThrows(NewsService.NewsApiException.class, () -> {
+            newsService.getNews(TEST_QUERY, TEST_SORT_BY, TEST_PAGE_SIZE);
+        });
+        verify(restTemplate, times(1)).getForEntity(anyString(), eq(String.class));
     }
 }
